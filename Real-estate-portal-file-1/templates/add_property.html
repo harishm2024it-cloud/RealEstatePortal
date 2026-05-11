@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Post Property - Real Estate Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="fw-bold text-center mb-4 text-secondary">List Your Property</h2>
+                    <p class="text-center text-muted mb-5">Fill in the details to post your property on the World's
+                        Largest NoBrokerage Property Site.</p>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <h5 class="fw-bold text-secondary mb-3 pb-2 border-bottom">Basic Details</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label">Property Title <span class="text-danger">*</span></label>
+                                <input name="title" class="form-control" placeholder="e.g. 2 BHK Apartment in Solitaire"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Property Type <span class="text-danger">*</span></label>
+                                <select name="property_type" class="form-select" required>
+                                    <option value="">Select Type</option>
+                                    <option value="apartment">Apartment</option>
+                                    <option value="house">Independent House</option>
+                                    <option value="land">Plot / Land</option>
+                                    <option value="commercial">Commercial</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Expected Price (₹) <span class="text-danger">*</span></label>
+                                <input name="price" type="number" class="form-control" placeholder="e.g. 2500000"
+                                    required>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-secondary mb-3 pb-2 border-bottom">Locality & Address</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">City / Location <span class="text-danger">*</span></label>
+                                <input name="location" class="form-control" placeholder="e.g. Mumbai, Bandra" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Full Address <span class="text-danger">*</span></label>
+                                <textarea name="address" class="form-control" rows="2" placeholder="Enter full address"
+                                    required></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Google Maps Link (Optional)</label>
+                                <input name="map_url" class="form-control" placeholder="Paste Google Maps URL here">
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-secondary mb-3 pb-2 border-bottom">Property Features</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">Bedrooms</label>
+                                <input name="bedrooms" type="number" class="form-control" placeholder="e.g. 2">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Bathrooms</label>
+                                <input name="bathrooms" type="number" class="form-control" placeholder="e.g. 2">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Carpet Area (sq ft)</label>
+                                <input name="area" type="number" class="form-control" placeholder="e.g. 1200">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Amenities</label>
+                                <textarea name="amenities" class="form-control" rows="2"
+                                    placeholder="e.g. Gym, Pool, Parking, Lift, Security"></textarea>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-secondary mb-3 pb-2 border-bottom">Photos</h5>
+                        <div class="mb-5">
+                            <label class="form-label">Upload Images</label>
+                            <input type="file" name="images" class="form-control" accept="image/*" multiple>
+                            <div class="form-text">Add high-quality photos to get more responses. Max size 5MB per
+                                image.</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg"
+                                onclick="this.disabled=true;this.form.submit();">Post Property</button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg text-muted">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

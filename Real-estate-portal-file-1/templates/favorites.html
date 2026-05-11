@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* INLINE CSS AS REQUESTED */
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 80px;
+        }
+
+        /* Fixed Dashboard Button */
+        .btn-dashboard-fixed {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            background-color: #dc3545;
+            /* Red */
+            color: #ffffff;
+            border: 2px solid #dc3545;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-dashboard-fixed:hover {
+            background-color: #bb2d3b;
+            border-color: #bb2d3b;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* Card Styles */
+        .card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            background-color: #ffffff;
+            height: 100%;
+            min-height: 550px;
+            /* REQUIRED: Larger constant height */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-img-top {
+            height: 250px;
+            /* Increased height */
+            object-fit: cover;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+            font-size: 1.5rem;
+            /* REQUIRED: Larger Font */
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            font-size: 1.1rem;
+            /* REQUIRED: Larger Body Text */
+        }
+
+        .card-text {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Flexbox for Buttons */
+        .card-actions {
+            margin-top: auto;
+            padding-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn-primary {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            flex-grow: 1;
+        }
+
+        .btn-primary:hover {
+            background-color: #bb2d3b;
+        }
+
+        /* Badges */
+        .badge {
+            font-weight: 500;
+            padding: 0.5em 0.8em;
+            font-size: 0.9rem;
+        }
+
+        /* Toast Popup */
+        #custom-toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #fff;
+            color: #333;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 10000;
+            left: 50%;
+            top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid #eee;
+        }
+
+        #custom-toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {
+                top: 0;
+                opacity: 0;
+            }
+
+            to {
+                top: 30px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeout {
+            from {
+                top: 30px;
+                opacity: 1;
+            }
+
+            to {
+                top: 0;
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- Fixed Back to Dashboard Button -->
+    <a href="{{ url_for('dashboard') }}" class="btn-dashboard-fixed">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <!-- Toast Notification -->
+    <div id="custom-toast">
+        <i class="fas fa-heart text-danger"></i> Added to Favorites!
+    </div>
+
+    <div class="container mb-5">
+        <h1 class="text-center mb-5 fw-bold">My Favorites</h1>
+
+        {% if properties %}
+        <div class="row">
+            {% for p in properties %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow h-100">
+                    {% if p.images %}
+                    <!-- FIXED IMAGE PATH: Points to static/uploads/ -->
+                    <img src="{{ url_for('static', filename='uploads/' + p.images[0].filename) }}" class="card-img-top"
+                        alt="Property Image">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ p.title }}</h5>
+                        <h6 class="text-danger fw-bold mb-3" style="font-size: 1.2rem;">₹{{ p.price }}</h6>
+
+                        <p class="card-text"><i class="fas fa-map-marker-alt text-muted me-2"></i> {{ p.location }}</p>
+
+                        {% if p.map_url %}
+                        <div class="mb-2">
+                            <a href="{{ p.map_url }}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
+                                <i class="fas fa-map"></i> View on Map
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3 mt-2">
+                            {% if p.bedrooms %}
+                            <span class="badge bg-light text-dark border me-1">{{ p.bedrooms }} Beds</span>
+                            {% endif %}
+                            {% if p.bathrooms %}
+                            <span class="badge bg-light text-dark border me-1">{{ p.bathrooms }} Baths</span>
+                            {% endif %}
+                            {% if p.area %}
+                            <span class="badge bg-light text-dark border">{{ p.area }} sq ft</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="{{ url_for('property_detail', property_id=p.id) }}" class="btn btn-primary">View
+                                Details</a>
+                            <button class="btn btn-outline-danger favorite-btn" data-property-id="{{ p.id }}"
+                                title="Remove from Favorites">
+                                <i class="fas fa-heart text-danger"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center mt-5">
+            <h3 class="text-muted">No favorite properties yet.</h3>
+            <p>Go to the properties page to add some!</p>
+            <a href="{{ url_for('view_properties') }}" class="btn btn-primary mt-3">Browse Properties</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toast Function
+        function showToast(message) {
+            var x = document.getElementById("custom-toast");
+            x.innerHTML = '<i class="fas fa-heart text-danger"></i> ' + message;
+            x.className = "show";
+            setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        // Handle Favorite Click
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.favorite-btn')) {
+                e.preventDefault();
+                const btn = e.target.closest('.favorite-btn');
+                const propertyId = btn.dataset.propertyId;
+                const cardCol = btn.closest('.col-md-4');
+
+                // Send Request
+                fetch(`/toggle-favorite/${propertyId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        showToast("Removed from Favorites");
+                        // Fade out and remove card
+                        cardCol.style.transition = "all 0.5s";
+                        cardCol.style.opacity = "0";
+                        cardCol.style.transform = "scale(0.9)";
+                        setTimeout(() => cardCol.remove(), 500);
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>

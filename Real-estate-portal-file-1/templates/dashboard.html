@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Real Estate Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title display-4">World's Largest NoBrokerage Property Site</h1>
+        <p class="hero-subtitle lead">Buy, Rent, or Sell properties with zero brokerage fees.</p>
+
+        <!-- Search Box -->
+        <div class="search-box-container text-start">
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill px-4" id="pills-buy-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-buy" type="button" role="tab" aria-selected="true">Buy</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="pills-rent-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-rent" type="button" role="tab" aria-selected="false">Rent</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4" id="pills-commercial-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-commercial" type="button" role="tab"
+                        aria-selected="false">Commercial</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                <!-- Generic Search Form structure that redirects to search_properties -->
+                <form action="{{ url_for('search_properties') }}" method="GET"
+                    class="d-flex flex-wrap gap-2 align-items-end">
+                    <div class="flex-grow-1">
+                        <label class="form-label small text-muted">Location</label>
+                        <select name="location" class="form-select border-0 bg-light-custom">
+                            <option value="">Select City</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <!-- Add dynamic locations if available/needed, otherwise keep static for UI demo -->
+                        </select>
+                    </div>
+                    <div class="flex-grow-1">
+                        <label class="form-label small text-muted">Property Type</label>
+                        <select name="property_type" class="form-select border-0 bg-light-custom">
+                            <option value="">All Types</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="house">House</option>
+                            <option value="land">Plot/Land</option>
+                        </select>
+                    </div>
+                    <div class="flex-grow-1">
+                        <label class="form-label small text-muted">Budget</label>
+                        <input type="number" name="max_price" class="form-control border-0 bg-light-custom"
+                            placeholder="Max Price">
+                    </div>
+                    <button type="submit" class="btn btn-primary px-4 py-2" style="height: 42px;">
+                        <i class="fas fa-search me-2"></i> Search
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard Content -->
+<div class="container pb-5">
+
+    <!-- Quick Actions (redundant if using Navbar, but good for Dashboard feel) -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="bg-light-custom p-3 rounded-circle me-3 text-primary-custom">
+                        <i class="fas fa-home fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Post a Property</h5>
+                        <p class="text-muted small mb-0">List your property for free and connect with buyers.</p>
+                    </div>
+                    <a href="{{ url_for('add_property') }}" class="btn btn-outline-primary ms-auto">Post Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="bg-light-custom p-3 rounded-circle me-3 text-primary-custom">
+                        <i class="fas fa-search fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Explore Properties</h5>
+                        <p class="text-muted small mb-0">Browse verified listings in your area.</p>
+                    </div>
+                    <a href="{{ url_for('view_properties') }}" class="btn btn-outline-primary ms-auto">Explore</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inbox / Inquiries -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="text-secondary">Recent Inquiries</h4>
+            </div>
+
+            <div class="card shadow-soft border-0">
+                <div class="card-body p-0">
+                    {% if inquiries %}
+                    <div class="list-group list-group-flush">
+                        {% for inquiry in inquiries %}
+                        <div class="list-group-item p-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="me-3">
+                                    <h6 class="mb-1 text-primary-custom">{{ inquiry.property.title }}</h6>
+                                    <p class="mb-1 text-dark">{{ inquiry.message }}</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i> {{ inquiry.sender.name }} ({{
+                                        inquiry.sender.email }})
+                                    </small>
+                                </div>
+                                <span class="badge bg-light text-dark border">
+                                    {{ inquiry.date_sent.strftime('%Y-%m-%d') }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="text-muted mb-3"><i class="fas fa-inbox fa-3x"></i></div>
+                        <h6 class="text-muted">No inquiries received yet.</h6>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

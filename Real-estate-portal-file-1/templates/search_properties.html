@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Search Properties - Real Estate Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body p-4">
+            <h4 class="fw-bold text-secondary mb-4">Search Filters</h4>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Locality</label>
+                    <select id="location" class="form-select bg-light-custom border-0">
+                        <option value="">All Locations</option>
+                        {% for loc in locations %}
+                        <option value="{{ loc }}" {% if request.args.get('location')==loc %}selected{% endif %}>{{ loc
+                            }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Min Price</label>
+                    <input id="min_price" type="number" class="form-control bg-light-custom border-0"
+                        placeholder="Min ₹" value="{{ request.args.get('min_price', '') }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Max Price</label>
+                    <input id="max_price" type="number" class="form-control bg-light-custom border-0"
+                        placeholder="Max ₹" value="{{ request.args.get('max_price', '') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Property Type</label>
+                    <select id="property_type" class="form-select bg-light-custom border-0">
+                        <option value="">All Types</option>
+                        <option value="apartment" {% if request.args.get('property_type')=='apartment' %}selected{%
+                            endif %}>Apartment</option>
+                        <option value="house" {% if request.args.get('property_type')=='house' %}selected{% endif %}>
+                            House</option>
+                        <option value="land" {% if request.args.get('property_type')=='land' %}selected{% endif %}>Plot
+                            / Land</option>
+                        <option value="commercial" {% if request.args.get('property_type')=='commercial' %}selected{%
+                            endif %}>Commercial</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-muted">Bedrooms</label>
+                    <input id="bedrooms" type="number" class="form-control bg-light-custom border-0"
+                        placeholder="Min Beds" value="{{ request.args.get('bedrooms', '') }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="results" class="row g-4">
+        {% for p in properties %}
+        <div class="col-md-6 col-lg-4">
+            <div class="property-card h-100">
+                <div class="property-img-container">
+                    {% if p.images %}
+                    <img src="{{ url_for('static', filename='uploads/' + p.images[0].filename) }}" class="property-img"
+                        alt="{{ p.title }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/400x300?text=No+Image" class="property-img" alt="No Image">
+                    {% endif %}
+                    <span class="property-badge">Verified</span>
+
+                    <button
+                        class="btn btn-light rounded-circle shadow-sm favorite-btn position-absolute top-0 end-0 m-2 p-2"
+                        data-property-id="{{ p.id }}" title="Add to Favorites"
+                        style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                        {% if current_user.is_authenticated %}
+                        <i
+                            class="fas fa-heart {% if current_user in p.favorited_by %}text-danger{% else %}text-muted{% endif %}"></i>
+                        {% else %}
+                        <i class="far fa-heart text-muted"></i>
+                        {% endif %}
+                    </button>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="property-title text-truncate" title="{{ p.title }}">{{ p.title }}</h5>
+                    <div class="property-price">₹ {{ p.price }}</div>
+                    <div class="property-location text-truncate">
+                        <i class="fas fa-map-marker-alt text-danger"></i> {{ p.location }}
+                    </div>
+
+                    <div class="property-features">
+                        {% if p.bedrooms %}
+                        <span><i class="fas fa-bed me-1"></i> {{ p.bedrooms }} BHK</span>
+                        {% endif %}
+                        {% if p.bathrooms %}
+                        <span><i class="fas fa-bath me-1"></i> {{ p.bathrooms }} Bath</span>
+                        {% endif %}
+                        {% if p.area %}
+                        <span><i class="fas fa-vector-square me-1"></i> {{ p.area }} sqft</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-actions mt-auto">
+                        <a href="{{ url_for('property_detail', property_id=p.id) }}"
+                            class="btn btn-primary flex-grow-1">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-5 text-center">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function updateResults() {
+        const location = document.getElementById('location').value;
+        const min_price = document.getElementById('min_price').value;
+        const max_price = document.getElementById('max_price').value;
+        const property_type = document.getElementById('property_type').value;
+        const bedrooms = document.getElementById('bedrooms').value;
+
+        const params = new URLSearchParams({
+            location: location,
+            min_price: min_price,
+            max_price: max_price,
+            property_type: property_type,
+            bedrooms: bedrooms
+        });
+
+        fetch(`/search-results?${params}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('results').innerHTML = html;
+            });
+    }
+
+    // Add event listeners to inputs
+    document.getElementById('location').addEventListener('input', updateResults);
+    document.getElementById('min_price').addEventListener('input', updateResults);
+    document.getElementById('max_price').addEventListener('input', updateResults);
+    document.getElementById('property_type').addEventListener('change', updateResults);
+    document.getElementById('bedrooms').addEventListener('input', updateResults);
+
+    // Favorite toggle using delegation for dynamic elements
+    document.getElementById('results').addEventListener('click', function (e) {
+        if (e.target.closest('.favorite-btn')) {
+            e.preventDefault();
+            const btn = e.target.closest('.favorite-btn');
+            const propertyId = btn.dataset.propertyId;
+            const icon = btn.querySelector('i');
+
+            fetch(`/toggle-favorite/${propertyId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.favorited) {
+                        icon.classList.remove('far', 'text-muted');
+                        icon.classList.add('fas', 'text-danger');
+                    } else {
+                        icon.classList.remove('fas', 'text-danger');
+                        icon.classList.add('far', 'text-muted');
+                    }
+                });
+        }
+    });
+</script>
+{% endblock %}

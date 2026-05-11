@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Property - Real Estate Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="fw-bold text-center mb-4 text-secondary">Edit Property</h2>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <h5 class="fw-bold text-secondary mb-3 pb-2 border-bottom">Basic Details</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label">Property Title <span class="text-danger">*</span></label>
+                                <input name="title" class="form-control" placeholder="Property Title"
+                                    value="{{ property.title }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Property Type <span class="text-danger">*</span></label>
+                                <select name="property_type" class="form-select" required>
+                                    <option value="">Select Type</option>
+                                    <option value="apartment" {% if property.property_type=='apartment' %}selected{%
+                                        endif %}>Apartment</option>
+                                    <option value="house" {% if property.property_type=='house' %}selected{% endif %}>
+                                        Independent House</option>
+                                    <option value="land" {% if property.property_type=='land' %}selected{% endif %}>Plot
+                                        / Land</option>
+                                    <option value="commercial" {% if property.property_type=='commercial' %}selected{%
+                                        endif %}>Commercial</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Expected Price (₹) <span class="text-danger">*</span></label>
+                                <input name="price" type="number" class="form-control" placeholder="Price"
+                                    value="{{ property.price }}" required>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-secondary mb-3 pb-2 border-bottom">Locality & Address</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">City / Location <span class="text-danger">*</span></label>
+                                <input name="location" class="form-control" placeholder="Location"
+                                    value="{{ property.location }}" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Full Address <span class="text-danger">*</span></label>
+                                <textarea name="address" class="form-control" rows="2" placeholder="Full Address"
+                                    required>{{ property.address }}</textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Google Maps Link (Optional)</label>
+                                <input name="map_url" class="form-control" placeholder="Google Maps URL"
+                                    value="{{ property.map_url or '' }}">
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-secondary mb-3 pb-2 border-bottom">Property Features</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">Bedrooms</label>
+                                <input name="bedrooms" type="number" class="form-control" placeholder="Bedrooms"
+                                    value="{{ property.bedrooms }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Bathrooms</label>
+                                <input name="bathrooms" type="number" class="form-control" placeholder="Bathrooms"
+                                    value="{{ property.bathrooms }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Carpet Area (sq ft)</label>
+                                <input name="area" type="number" class="form-control" placeholder="Area"
+                                    value="{{ property.area }}">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Amenities</label>
+                                <textarea name="amenities" class="form-control" rows="2"
+                                    placeholder="e.g. Gym, Pool">{{ property.amenities }}</textarea>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-secondary mb-3 pb-2 border-bottom">Photos</h5>
+                        <div class="mb-5">
+                            <label class="form-label">Update Images</label>
+                            <input type="file" name="images" class="form-control" accept="image/*" multiple>
+                            {% if property.images %}
+                            <div class="form-text text-muted mt-2">Currently has {{ property.images|length }} images.
+                                Uploading new images will add to these.</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg text-white"
+                                onclick="this.disabled=true;this.form.submit();">Update Property</button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg text-muted">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

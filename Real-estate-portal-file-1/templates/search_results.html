@@ -1,0 +1,51 @@
+{% for p in properties %}
+<div class="col-md-6 col-lg-4">
+    <div class="property-card h-100">
+        <div class="property-img-container">
+            {% if p.images %}
+            <img src="{{ url_for('static', filename='uploads/' + p.images[0].filename) }}" class="property-img"
+                alt="{{ p.title }}">
+            {% else %}
+            <img src="https://via.placeholder.com/400x300?text=No+Image" class="property-img" alt="No Image">
+            {% endif %}
+            <span class="property-badge">Verified</span>
+
+            <button class="btn btn-light rounded-circle shadow-sm favorite-btn position-absolute top-0 end-0 m-2 p-2"
+                data-property-id="{{ p.id }}" title="Add to Favorites"
+                style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                {% if current_user.is_authenticated %}
+                <i
+                    class="fas fa-heart {% if current_user in p.favorited_by %}text-danger{% else %}text-muted{% endif %}"></i>
+                {% else %}
+                <i class="far fa-heart text-muted"></i>
+                {% endif %}
+            </button>
+        </div>
+
+        <div class="card-body">
+            <h5 class="property-title text-truncate" title="{{ p.title }}">{{ p.title }}</h5>
+            <div class="property-price">₹ {{ p.price }}</div>
+            <div class="property-location text-truncate">
+                <i class="fas fa-map-marker-alt text-danger"></i> {{ p.location }}
+            </div>
+
+            <div class="property-features">
+                {% if p.bedrooms %}
+                <span><i class="fas fa-bed me-1"></i> {{ p.bedrooms }} BHK</span>
+                {% endif %}
+                {% if p.bathrooms %}
+                <span><i class="fas fa-bath me-1"></i> {{ p.bathrooms }} Bath</span>
+                {% endif %}
+                {% if p.area %}
+                <span><i class="fas fa-vector-square me-1"></i> {{ p.area }} sqft</span>
+                {% endif %}
+            </div>
+
+            <div class="card-actions mt-auto">
+                <a href="{{ url_for('property_detail', property_id=p.id) }}" class="btn btn-primary flex-grow-1">View
+                    Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
