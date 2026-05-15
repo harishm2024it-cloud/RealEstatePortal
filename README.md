@@ -246,7 +246,7 @@ This project is for educational and demonstration purposes.
 
 ## Author
 
-Created by [Harish Akshay](https://github.com/harishakshay).
+Created by [Hemalatha](https://github.com/hemalatha-0307).
 
 ---
 
